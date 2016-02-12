@@ -1,5 +1,8 @@
 # node-microioc
 [![Build Status](https://travis-ci.org/orzarchi/node-microioc.svg?branch=master)](https://travis-ci.org/orzarchi/node-microioc)
+[![Coverage Status](https://coveralls.io/repos/github/orzarchi/node-microioc/badge.svg?branch=master)](https://coveralls.io/github/orzarchi/node-microioc?branch=master)
+[![Dependencies](https://david-dm.org/orzarchi/node-microioc.svg)](https://david-dm.org/orzarchi/node-microioc#info=dependencies)
+
 
 A simple Inversion of Control (IOC) container for Node.js.
 It's based on constructor argument reflection (using a fork of https://github.com/kilianc/node-introspect), 
@@ -200,7 +203,10 @@ If the class is registered multiple times in the container, which one of them wi
 
 #Best practices
 
-1. Split container initialization to modules:
+##### Split container initialization to modules:
+Not keeping all of your dependency initialization in one file makes it easier to maintain.
+
+###### Example
 
 ```javascript
 
@@ -245,13 +251,12 @@ let application = container.resolve('bootstrapper');
 
 ```
 
-Not keeping all of your dependency initialization in one file makes it easier to maintain.
 
-2. Avoid too many constructor dependencies
+##### Avoid too many constructor dependencies
 This is a code smell that hints at your class having too many responsibilities.
 Extract a few of the dependencies and the code that use them to a new class, and depend on it instead.  
 
-3. Create the container only once, at the start of your code.
+##### Create the container only once, at the start of your code.
 This should happend in app.js or a similiar file.
 Avoid passing the container around your codebase or declaring it in a global module.
 A correctly built dependency tree requires a single **resolve** call for a single class, called a Composition Root,
