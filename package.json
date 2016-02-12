@@ -1,0 +1,41 @@
+{
+  "name": "microioc",
+  "version": "1.0.0",
+  "description": "A simple Inversion of Control (IOC) container for Node.js, aimed at injecting ES2015 classes.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --harmony lib/test/**/*Spec.js"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [
+    "ioc",
+    "container",
+    "di",
+    "depenedency",
+    "injection",
+    "inversion",
+    "of",
+    "control",
+    "es2015",
+    "es6"
+  ],
+  "author": "Or Zarchi",
+  "license": "ISC",
+  "dependencies": {
+    "introspect": "git://github.com/orzarchi/node-introspect",
+    "lodash": "^4.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/orzarchi/node-microioc.git"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  }
+}
