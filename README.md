@@ -7,13 +7,13 @@ so you don't have to write any boilerplate code.
 
 It offers multiple useful features, such as cyclic dependency protection, and automated factories.
 
-#Installation
+##Installation
 
 ```
 $ npm install microioc
 ```
 
-#How to Use
+##How to Use
 
 ####Basic usage:
 
@@ -196,3 +196,73 @@ var resolvedInstance = container.resolveType(ImportantClass);
 
 Resolve an instance using the class reference, instead of a string id.
 If the class is registered multiple times in the container, which one of them will be resolved is not defined (i.e. don't do it).
+
+
+#Best practices
+
+1. Split container initialization to modules:
+
+```javascript
+
+-- technicalModule.js
+
+class TechnicalModule {
+    configure(container) {
+        this.container
+            .bindSingleton('dbProvider', MongoDBProvider)
+            .bindSingleton('logger', FileLoggerProvider)
+            .bindType('statusApiController', StatusApiController).groupOnId('controllers')
+            .bindType('maintenanceApiController', UsersApiController).groupOnId('controllers');
+    }
+}
+
+module.exports = new TechnicalModule();
+
+-- appModule.js
+
+class ApplicationModule {
+    configure(container) {
+        this.container
+            .bindType('bootstrapper', ApplicationBootstrapper)
+            .bindType('usersRepository', UsersRepository)
+            .bindType('loginController', LoginApiController).groupOnId('controllers');
+    }
+}
+    
+module.exports = new ApplicationModule();
+
+-- app.js
+
+let IOC = require("microioc");
+let technicalModule = require("./technicalModule");
+let applicationModule = require("./appModule");
+let container = new IOC();
+
+container = technicalModule.configure(container);
+container = applicationModule.configure(container);
+
+let application = container.resolve('bootstrapper');
+
+```
+
+Not keeping all of your dependency initialization in one file makes it easier to maintain.
+
+2. Avoid too many constructor dependencies
+This is a code smell that hints at your class having too many responsibilities.
+Extract a few of the dependencies and the code that use them to a new class, and depend on it instead.  
+
+3. Create the container only once, at the start of your code.
+This should happend in app.js or a similiar file.
+Avoid passing the container around your codebase or declaring it in a global module.
+A correctly built dependency tree requires a single **resolve** call for a single class, called a Composition Root,
+which indirectly creates instances of your entire application.
+
+##Contributing
+
+###Running tests
+
+```
+$ npm test
+```
+
+The code is tested and used in production projects, but please report any issues you may find!
