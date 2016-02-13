@@ -214,11 +214,11 @@ Not keeping all of your dependency initialization in one file makes it easier to
 
 class TechnicalModule {
     configure(container) {
-        this.container
-            .bindSingleton('dbProvider', MongoDBProvider)
-            .bindSingleton('logger', FileLoggerProvider)
-            .bindType('statusApiController', StatusApiController).groupOnId('controllers')
-            .bindType('maintenanceApiController', UsersApiController).groupOnId('controllers');
+        return this.container
+                   .bindSingleton('dbProvider', MongoDBProvider)
+                   .bindSingleton('logger', FileLoggerProvider)
+                   .bindType('statusApiController', StatusApiController).groupOnId('controllers')
+                   .bindType('maintenanceApiController', UsersApiController).groupOnId('controllers');
     }
 }
 
@@ -228,10 +228,10 @@ module.exports = new TechnicalModule();
 
 class ApplicationModule {
     configure(container) {
-        this.container
-            .bindType('bootstrapper', ApplicationBootstrapper)
-            .bindType('usersRepository', UsersRepository)
-            .bindType('loginController', LoginApiController).groupOnId('controllers');
+        return this.container
+                   .bindType('bootstrapper', ApplicationBootstrapper)
+                   .bindType('usersRepository', UsersRepository)
+                   .bindType('loginController', LoginApiController).groupOnId('controllers');
     }
 }
     
@@ -257,10 +257,13 @@ This is a code smell that hints at your class having too many responsibilities.
 Extract a few of the dependencies and the code that use them to a new class, and depend on it instead.  
 
 ##### Create the container only once, at the start of your code.
-This should happend in app.js or a similiar file.
++ This should happen in app.js or a similiar file.
 Avoid passing the container around your codebase or declaring it in a global module.
-A correctly built dependency tree requires a single **resolve** call for a single class, called a Composition Root,
+
++ Resolving: A correctly built dependency tree requires a single **resolve** call for a single class, called a Composition Root,
 which indirectly creates instances of your entire application.
+Additional resolves are usually only needed when replying to user http requests, such as controller classes.
+
 
 ##Contributing
 
