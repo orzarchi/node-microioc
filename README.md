@@ -3,6 +3,25 @@
 [![Coverage Status](https://coveralls.io/repos/github/orzarchi/node-microioc/badge.svg?branch=master)](https://coveralls.io/github/orzarchi/node-microioc?branch=master)
 [![Dependencies](https://david-dm.org/orzarchi/node-microioc.svg)](https://david-dm.org/orzarchi/node-microioc#info=dependencies)
 
+**Table of Contents** 
+
+- [Installation](#)
+- [How to Use](#)
+    - [Basic usage:](#)
+    - [Basic type binding:](#)
+    - [Singletons:](#)
+    - [Dependency Groups:](#)
+    - [Automated Factories:](#)
+        - [Example showing all of the above:](#)
+    - [Resolving by type:](#)
+- [Best practices](#)
+    - [Split container initialization to modules:](#)
+        - [Example](#)
+    - [Avoid too many constructor dependencies](#)
+    - [Create the container only once, at the start of your code.](#)
+- [Contributing](#)
+    - [Running tests](#)
+
 
 A simple Inversion of Control (IOC) container for Node.js.
 It's based on constructor argument reflection (using a fork of https://github.com/kilianc/node-introspect), 
@@ -64,7 +83,9 @@ let aDifferentClassInstance = container.resolve('dependency');
 **NOTE**: The registered class' constructor arguments must all be registered with the container as well.
 If you need a way to pass your own dynamic arguments to constructors, see the section about *automated factories*.
 
+
 ####Singletons:
+
 ```javascript
 container.bindSingleton('dependency', IAmADependency);
 
@@ -73,23 +94,54 @@ let theSameClassInstance = container.resolve('dependency');
 
 ```
 
+
 * Register a class as a singleton, ensuring that every time it is resolved by the container, the same instance is returned.
 * Bindings can be chained with non-singleton bindings while creating the container.
-* **NOTE**: Registering a class as a singleton under multiple ids works, and you can resolve the same instance using
+
+
+#####Sharing ids between Singletons:
+
+Registering a class as a singleton under multiple ids works, and you can resolve the same instance using
 any of the ids.
 This allows you to treat the same singleton in multiple ways (i.e. name it differently in different constructors).
 This is a good way to emulate interfaces found in statically typed language.
 
+```javascript
+container.bindSingleton('type1', Singleton)
+         .bindSingleton('type2', Singleton);
+         
+class IWantASingleton {
+  constructor(type1) {
+     this.mySingleton = type1
+  }
+}
+
+
+class IWantTheSameSingleton {
+  constructor(type2) {
+     this.mySingleton = type2
+  }
+}
+         
+ // The above example will allow you to create up exactly one unique instances of a class named 'Singleton',
+ // But you may request is under two different names.
+
+```
+
+
 * In order to avoid this behaviour, you can mark a singleton as a unique instance while binding it to an id:
+
 
 ```javascript
 container.bindSingleton('type1', Singleton).createUniqueInstance()
          .bindSingleton('type2', Singleton).createUniqueInstance();
          
- // The above example will allow you to create up to exactly two unique instances of a class named 'Singleton':
- // one by resolving 'type1', and one by 'type2'.
+ // The above example will allow you to create up to exactly two unique instances 
+ // of a class named 'Singleton': one by resolving 'type1', and one by 'type2'.
 
 ```
+
+
 
 ####Dependency Groups:
 
@@ -107,10 +159,13 @@ class VeryImportantClass {
 
 ```
 
+
 Using the *groupOnId* method will mark the preceding type binding as part of a type group.
-When a dependent class requests a group id in it's constructor, an array will be injected containing created instances.
+When a dependent class requests a group id in its constructor, an array will be injected containing created instances.
+
 
 ####Automated Factories:
+
 ```javascript
 class ImportantClass {
   constructor(aNumber) {
@@ -144,7 +199,9 @@ Calling the injected function will return an instance of the requested class.
 Every dynamic constructor argument passed to the factory function will be passed first to the dependency's constructor.
 Remaining constructor arguments defined on the dependency class will be need to be registered in the container, or an error will be thrown.
 
+
 #####Example showing all of the above:
+
 ```javascript
 
 class DependencyClass {
@@ -182,7 +239,10 @@ console.log(instance.dependencyClass.member); // 'member'
 console.log(instance.anotherDependencyClassInstance.arg); // 'another string'
 ```
 
+
+
 ####Resolving by type:
+
 ```javascript
 class ImportantClass {
   constructor(aNumber) {
@@ -197,11 +257,13 @@ var resolvedInstance = container.resolveType(ImportantClass);
 
 ```
 
+
 Resolve an instance using the class reference, instead of a string id.
 If the class is registered multiple times in the container, which one of them will be resolved is not defined (i.e. don't do it).
 
 
-#Best practices
+
+##Best practices
 
 ##### Split container initialization to modules:
 Not keeping all of your dependency initialization in one file makes it easier to maintain.

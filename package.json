@@ -1,6 +1,6 @@
 {
   "name": "microioc",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple Inversion of Control (IOC) container for Node.js, aimed at injecting ES2015 classes.",
   "main": "index.js",
   "scripts": {
