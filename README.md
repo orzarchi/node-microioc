@@ -1,5 +1,6 @@
 # node-microioc
 [![Build Status](https://travis-ci.org/orzarchi/node-microioc.svg?branch=master)](https://travis-ci.org/orzarchi/node-microioc)
+[![npm version](https://badge.fury.io/js/microioc.svg)](https://badge.fury.io/js/microioc)
 [![Coverage Status](https://coveralls.io/repos/github/orzarchi/node-microioc/badge.svg?branch=master)](https://coveralls.io/github/orzarchi/node-microioc?branch=master)
 [![Dependencies](https://david-dm.org/orzarchi/node-microioc.svg)](https://david-dm.org/orzarchi/node-microioc#info=dependencies)
 
