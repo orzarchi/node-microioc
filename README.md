@@ -5,22 +5,24 @@
 
 **Table of Contents** 
 
-- [Installation](#)
-- [How to Use](#)
-    - [Basic usage:](#)
-    - [Basic type binding:](#)
-    - [Singletons:](#)
-    - [Dependency Groups:](#)
-    - [Automated Factories:](#)
-        - [Example showing all of the above:](#)
-    - [Resolving by type:](#)
-- [Best practices](#)
-    - [Split container initialization to modules:](#)
-        - [Example](#)
-    - [Avoid too many constructor dependencies](#)
-    - [Create the container only once, at the start of your code.](#)
-- [Contributing](#)
-    - [Running tests](#)
+- [node-microioc](#)
+	- [Installation](#)
+	- [How to Use](#)
+			- [Basic usage](#)
+			- [Basic type binding](#)
+			- [Singletons](#)
+				- [Sharing ids between Singletons](#)
+			- [Dependency Groups](#)
+			- [Automated Factories](#)
+				- [Example showing all of the above](#)
+			- [Resolving by type](#)
+	- [Best practices](#)
+				- [Split container initialization to modules](#)
+					- [Example](#)
+				- [Avoid too many constructor dependencies](#)
+				- [Create the container only once, at the start of your code.](#)
+	- [Contributing](#)
+		- [Running tests](#)
 
 
 A simple Inversion of Control (IOC) container for Node.js.
@@ -37,7 +39,7 @@ $ npm install microioc
 
 ##How to Use
 
-####Basic usage:
+####Basic usage
 
 ```javascript
 class Child { 
@@ -66,7 +68,7 @@ let parent = container.resolve('parent');
 The MicroIOC container allows you to register multiple classes that depend on each other.
 Resolving a class by id will resolve the entire dependency tree.
 
-####Basic type binding:
+####Basic type binding
 ```javascript
 container.bindType('dependency', IAmADependency);
 
@@ -84,7 +86,7 @@ let aDifferentClassInstance = container.resolve('dependency');
 If you need a way to pass your own dynamic arguments to constructors, see the section about *automated factories*.
 
 
-####Singletons:
+####Singletons
 
 ```javascript
 container.bindSingleton('dependency', IAmADependency);
@@ -99,7 +101,7 @@ let theSameClassInstance = container.resolve('dependency');
 * Bindings can be chained with non-singleton bindings while creating the container.
 
 
-#####Sharing ids between Singletons:
+#####Sharing ids between Singletons
 
 Registering a class as a singleton under multiple ids works, and you can resolve the same instance using
 any of the ids.
@@ -123,7 +125,8 @@ class IWantTheSameSingleton {
   }
 }
          
- // The above example will allow you to create up exactly one unique instances of a class named 'Singleton',
+ // The above example will allow you to create up exactly 
+ // one unique instances of a class named 'Singleton',
  // But you may request is under two different names.
 
 ```
@@ -136,18 +139,22 @@ class IWantTheSameSingleton {
 container.bindSingleton('type1', Singleton).createUniqueInstance()
          .bindSingleton('type2', Singleton).createUniqueInstance();
          
- // The above example will allow you to create up to exactly two unique instances 
- // of a class named 'Singleton': one by resolving 'type1', and one by 'type2'.
+ // The above example will allow you to create exactly two unique 
+ // instances of a class named 'Singleton': 
+ // one by resolving 'type1', and one by 'type2'.
 
 ```
 
 
 
-####Dependency Groups:
+####Dependency Groups
 
 ```javascript
-container.bindType('messageHandler', BasicMessageHandler).groupOnId('messageHandlers');
-container.bindSingleton('anotherMessageHandler', AdvancedMessageHandler).groupOnId('messageHandlers');
+container.bindType('messageHandler', BasicMessageHandler)
+         .groupOnId('messageHandlers');
+         
+container.bindSingleton('anotherMessageHandler', AdvancedMessageHandler)
+         .groupOnId('messageHandlers');
 
 class VeryImportantClass {
   constructor(messageHandlers) {
@@ -164,7 +171,7 @@ Using the *groupOnId* method will mark the preceding type binding as part of a t
 When a dependent class requests a group id in its constructor, an array will be injected containing created instances.
 
 
-####Automated Factories:
+####Automated Factories
 
 ```javascript
 class ImportantClass {
@@ -200,7 +207,7 @@ Every dynamic constructor argument passed to the factory function will be passed
 Remaining constructor arguments defined on the dependency class will be need to be registered in the container, or an error will be thrown.
 
 
-#####Example showing all of the above:
+#####Example showing all of the above
 
 ```javascript
 
@@ -218,16 +225,16 @@ class WillBeAFactoryAsWell {
 }
 
 class WillBeAFactory {
-  constructor(aNumber,aString,aDependencyClass, anotherDependencyClassFactory) {
+  constructor(aNumber,aString,aDependency, anotherDependencyFactory) {
     this.number = aNumber;
     this.string = aString;
-    this.dependencyClass = aDependencyClass;
-    this.anotherDependencyClassInstance = anotherDependencyClassFactory('another string');
+    this.dependencyClass = aDependency;
+    this.anotherDependencyInstance = anotherDependencyFactory('another string');
   }
 }
 
-container.bindType('aDependencyClass', DependencyClass)
-         .bindType('anotherDependencyClass', WillBeAFactoryAsWell)
+container.bindType('aDependency', DependencyClass)
+         .bindType('anotherDependency', WillBeAFactoryAsWell)
          .bindType('finalClass', WillBeAFactory);
 
 let factory = container.resolve('finalClassFactory');
@@ -236,12 +243,12 @@ let instance = factory(2,'string');
 console.log(instance.number); // 2
 console.log(instance.string); // 'string'
 console.log(instance.dependencyClass.member); // 'member'
-console.log(instance.anotherDependencyClassInstance.arg); // 'another string'
+console.log(instance.anotherDependencyInstance.arg); // 'another string'
 ```
 
 
 
-####Resolving by type:
+####Resolving by type
 
 ```javascript
 class ImportantClass {
@@ -265,7 +272,7 @@ If the class is registered multiple times in the container, which one of them wi
 
 ##Best practices
 
-##### Split container initialization to modules:
+##### Split container initialization to modules
 Not keeping all of your dependency initialization in one file makes it easier to maintain.
 
 ###### Example
@@ -276,7 +283,7 @@ Not keeping all of your dependency initialization in one file makes it easier to
 
 class TechnicalModule {
     configure(container) {
-        return this.container
+        return container
                    .bindSingleton('dbProvider', MongoDBProvider)
                    .bindSingleton('logger', FileLoggerProvider)
                    .bindType('statusApiController', StatusApiController).groupOnId('controllers')
@@ -290,7 +297,7 @@ module.exports = new TechnicalModule();
 
 class ApplicationModule {
     configure(container) {
-        return this.container
+        return container
                    .bindType('bootstrapper', ApplicationBootstrapper)
                    .bindType('usersRepository', UsersRepository)
                    .bindType('loginController', LoginApiController).groupOnId('controllers');
@@ -313,6 +320,7 @@ let application = container.resolve('bootstrapper');
 
 ```
 
+---
 
 ##### Avoid too many constructor dependencies
 This is a code smell that hints at your class having too many responsibilities.
