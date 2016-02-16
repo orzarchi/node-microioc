@@ -6,24 +6,23 @@
 
 **Table of Contents** 
 
-- [node-microioc](#)
-	- [Installation](#)
-	- [How to Use](#)
-			- [Basic usage](#)
-			- [Basic type binding](#)
-			- [Singletons](#)
-				- [Sharing ids between Singletons](#)
-			- [Dependency Groups](#)
-			- [Automated Factories](#)
-				- [Example showing all of the above](#)
-			- [Resolving by type](#)
-	- [Best practices](#)
-				- [Split container initialization to modules](#)
-					- [Example](#)
-				- [Avoid too many constructor dependencies](#)
-				- [Create the container only once, at the start of your code.](#)
-	- [Contributing](#)
-		- [Running tests](#)
+- [Installation](#installation)
+- [How to Use](#how-to-use)
+    - [Basic usage](#basic-usage)
+    - [Basic type binding](#basic-type-binding)
+    - [Singletons](#singletons)
+        - [Sharing ids between Singletons](#sharing-ids-between-singletons)
+    - [Dependency Groups](#dependency-groups)
+    - [Automated Factories](#automated-factories)
+        - [Example showing all of the above](#example-showing-all-of-the-above)
+    - [Resolving by type](#resolving-by-type)
+- [Best practices](#best-practices)
+    - [Split container initialization to modules](#split-container-initialization-to-modules)
+        - [Example](#example)
+    - [Avoid too many constructor dependencies](#avoid-too-many-constructor-dependencies)
+    - [Create the container only once, at the start of your code.](#create-the-container-only-once)
+- [Contributing](#contributing)
+    - [Running tests](#running-tests)
 
 
 A simple Inversion of Control (IOC) container for Node.js.
@@ -273,10 +272,10 @@ If the class is registered multiple times in the container, which one of them wi
 
 ##Best practices
 
-##### Split container initialization to modules
+### Split container initialization to modules
 Not keeping all of your dependency initialization in one file makes it easier to maintain.
 
-###### Example
+#### Example
 
 ```javascript
 
@@ -321,13 +320,12 @@ let application = container.resolve('bootstrapper');
 
 ```
 
----
 
-##### Avoid too many constructor dependencies
+### Avoid too many constructor dependencies
 This is a code smell that hints at your class having too many responsibilities.
 Extract a few of the dependencies and the code that use them to a new class, and depend on it instead.  
 
-##### Create the container only once, at the start of your code.
+### Create the container only once.
 + This should happen in app.js or a similiar file.
 Avoid passing the container around your codebase or declaring it in a global module.
 
