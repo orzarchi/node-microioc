@@ -1,7 +1,6 @@
 # node-microioc
 [![Build Status](https://travis-ci.org/orzarchi/node-microioc.svg?branch=master)](https://travis-ci.org/orzarchi/node-microioc)
 [![npm version](https://badge.fury.io/js/microioc.svg)](https://badge.fury.io/js/microioc)
-[![Coverage Status](https://coveralls.io/repos/github/orzarchi/node-microioc/badge.svg?branch=master)](https://coveralls.io/github/orzarchi/node-microioc?branch=master)
 [![Dependencies](https://david-dm.org/orzarchi/node-microioc.svg)](https://david-dm.org/orzarchi/node-microioc#info=dependencies)
 
 **Table of Contents** 
@@ -127,7 +126,7 @@ class IWantTheSameSingleton {
          
  // The above example will allow you to create up exactly 
  // one unique instances of a class named 'Singleton',
- // But you may request is under two different names.
+ // But you may request it under two different names.
 
 ```
 
@@ -203,8 +202,9 @@ Calling the injected function will return an instance of the requested class.
 * The dependency can still have dependencies as well! In order to get them injected, pass no arguments to the factory function.
   Of course, you still need to make sure that the entire dependency tree is registered in the MicroIOC container.
 * A mix of dynamic and injected constructor arguments passed to automatic factory functions is partially supported:
-Every dynamic constructor argument passed to the factory function will be passed first to the dependency's constructor.
-Remaining constructor arguments defined on the dependency class will be need to be registered in the container, or an error will be thrown.
+Every argument we supply to an automated factory function will be passed as-is to the underlying class constructor, in
+the same order as the constructor's signature.
+The container will try to resolve all remaining parameters, and will throw an error if unsuccessful.
 
 
 #####Example showing all of the above
@@ -218,13 +218,13 @@ class DependencyClass {
 
 }
 
-class WillBeAFactoryAsWell {
+class WillBeAFactory {
   constructor(arg){
     this.arg = arg;
   }
 }
 
-class WillBeAFactory {
+class WillBeAFactoryAsWell {
   constructor(aNumber,aString,aDependency, anotherDependencyFactory) {
     this.number = aNumber;
     this.string = aString;
@@ -234,8 +234,8 @@ class WillBeAFactory {
 }
 
 container.bindType('aDependency', DependencyClass)
-         .bindType('anotherDependency', WillBeAFactoryAsWell)
-         .bindType('finalClass', WillBeAFactory);
+         .bindType('anotherDependency', WillBeAFactory)
+         .bindType('finalClass', WillBeAFactoryAsWell);
 
 let factory = container.resolve('finalClassFactory');
 let instance = factory(2,'string');
