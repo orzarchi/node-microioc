@@ -30,15 +30,15 @@ so you don't have to write any boilerplate code.
 
 It offers multiple useful features, such as cyclic dependency protection, and automated factories.
 
-##Installation
+## Installation
 
 ```
 $ npm install microioc
 ```
 
-##How to Use
+## How to Use
 
-####Basic usage
+#### Basic usage
 
 ```javascript
 class Child { 
@@ -67,7 +67,7 @@ let parent = container.resolve('parent');
 The MicroIOC container allows you to register multiple classes that depend on each other.
 Resolving a class by id will resolve the entire dependency tree.
 
-####Basic type binding
+#### Basic type binding
 ```javascript
 container.bindType('dependency', IAmADependency);
 
@@ -85,7 +85,7 @@ let aDifferentClassInstance = container.resolve('dependency');
 If you need a way to pass your own dynamic arguments to constructors, see the section about *automated factories*.
 
 
-####Singletons
+#### Singletons
 
 ```javascript
 container.bindSingleton('dependency', IAmADependency);
@@ -100,7 +100,7 @@ let theSameClassInstance = container.resolve('dependency');
 * Bindings can be chained with non-singleton bindings while creating the container.
 
 
-#####Sharing ids between Singletons
+##### Sharing ids between Singletons
 
 Registering a class as a singleton under multiple ids works, and you can resolve the same instance using
 any of the ids.
@@ -146,7 +146,7 @@ container.bindSingleton('type1', Singleton).createUniqueInstance()
 
 
 
-####Dependency Groups
+#### Dependency Groups
 
 ```javascript
 container.bindType('messageHandler', BasicMessageHandler)
@@ -170,7 +170,7 @@ Using the *groupOnId* method will mark the preceding type binding as part of a t
 When a dependent class requests a group id in its constructor, an array will be injected containing created instances.
 
 
-####Automated Factories
+#### Automated Factories
 
 ```javascript
 class ImportantClass {
@@ -207,7 +207,7 @@ the same order as the constructor's signature.
 The container will try to resolve all remaining parameters, and will throw an error if unsuccessful.
 
 
-#####Example showing all of the above
+##### Example showing all of the above
 
 ```javascript
 
@@ -248,7 +248,7 @@ console.log(instance.anotherDependencyInstance.arg); // 'another string'
 
 
 
-####Resolving by type
+#### Resolving by type
 
 ```javascript
 class ImportantClass {
@@ -270,7 +270,7 @@ If the class is registered multiple times in the container, which one of them wi
 
 
 
-##Best practices
+## Best practices
 
 ### Split container initialization to modules
 Not keeping all of your dependency initialization in one file makes it easier to maintain.
@@ -334,9 +334,9 @@ which indirectly creates instances of your entire application.
 Additional resolves are usually only needed when replying to user http requests, such as controller classes.
 
 
-##Contributing
+## Contributing
 
-###Running tests
+### Running tests
 
 ```
 $ npm test
